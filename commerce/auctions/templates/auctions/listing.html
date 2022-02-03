@@ -1,0 +1,28 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %} Listing {% endblock %}
+
+{% block body %}
+<h1>{{ listing_data.title }}
+  {% if user.username != listing_data.user.username %}
+  / Add to wishlist
+  {% endif %}
+</h1>
+<h5>{{ listing_data.user }}</h2>
+  <br /><br />
+
+  {% if user.username != listing_data.user.username %}
+  <h1>Add to wishlist</h1>
+  {% endif %}
+
+  <p>Description:</p>
+  <p>{{ listing_data.description }}</p>
+  <br /><br />
+
+  <p>Image:</p>
+  <img src="{{ listing_data.url }}" alt="Image of a {{ listing_data.title }}" width="500">
+  <br /><br />
+
+  <p>Initial value: R$ {{ listing_data.value }} </p>
+
+  {% endblock %}
