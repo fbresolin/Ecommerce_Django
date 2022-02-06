@@ -3,29 +3,30 @@
 {% block title %} New Listing {% endblock %}
 
 {% block body %}
-<h2>New listing</h2>
+<h2>Edit listing</h2>
 
-<form action="{% url 'new_listing' %}" method="POST">
+<form action="{% url 'edit_listing' listing_data.pk %}" method="POST">
   {% csrf_token %}
   <fieldset>
     <div class="form-group">
       <label for="title" class="form-label mt-4">Title</label>
-      <input type="text" class="form-control" name="title" aria-describedby="title" placadeholder="Title">
+      <input type="text" class="form-control" name="title" aria-describedby="title" value="{{ listing_data.title }}">
     </div>
     <div class="form-group">
       <label for="description" class="form-label mt-4">Description</label>
       <textarea class="form-control" name="description" aria-describedby="description" rows="6" maxlength="1024"
-        required></textarea>
+        required>{{ listing_data.description }}</textarea>
     </div>
     <div class="form-group">
       <label for="image" class="form-label mt-4">Image url</label>
-      <input type="url" class="form-control" name="image" aria-describedby="Image url" placeholder="Image url">
+      <input type="url" class="form-control" name="image" aria-describedby="Image url" value="{{ listing_data.image }}">
     </div>
     <div class="form-group">
       <label for="value" class="form-label mt-4">Initial value</label>
-      <input type="number" class="form-control" name="value" aria-describedby="Initial value" placeholder="Value">
+      <input type="number" class="form-control" name="value" aria-describedby="Initial value"
+        value="{{ listing_data.value }}">
     </div>
-    <button type="submit" class="btn btn-primary">Submit listing</button>
+    <button type="submit" class="btn btn-primary">Edit listing</button>
   </fieldset>
 </form>
 

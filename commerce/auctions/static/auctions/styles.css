@@ -1,3 +1,18 @@
 body {
     padding: 10px;
 }
+
+.outerurlImageContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;  /* Centering y-axis */
+    align-items: center; /* Centering x-axis */
+    text-decoration: none;
+}
+
+.urlImageContent {
+    max-height: 300px; 
+    max-width: 500px;
+    height: auto;
+    width: auto;
+}

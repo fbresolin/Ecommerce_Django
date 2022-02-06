@@ -4,23 +4,27 @@
 
 {% block body %}
 
-    <h2>Login</h2>
+<h2>Login</h2><br />
 
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
+{% if message %}
+<div>{{ message }}</div>
+{% endif %}
 
-    <form action="{% url 'login' %}" method="post">
-        {% csrf_token %}
+<form action="{% url 'login' %}" method="post">
+    {% csrf_token %}
+    <fieldset>
         <div class="form-group">
-            <input autofocus class="form-control" type="text" name="username" placeholder="Username">
+            <label for="username" class="form-label mt-4">Username</label>
+            <input type="text" class="form-control" name="username" aria-describedby="username">
         </div>
         <div class="form-group">
-            <input class="form-control" type="password" name="password" placeholder="Password">
+            <label for="password" class="form-label mt-4">Password</label>
+            <input type="password" class="form-control" name="password" aria-describedby="password">
         </div>
-        <input class="btn btn-primary" type="submit" value="Login">
-    </form>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </fieldset>
+</form>
 
-    Don't have an account? <a href="{% url 'register' %}">Register here.</a>
+Don't have an account? <a href="{% url 'register' %}">Register here.</a>
 
 {% endblock %}

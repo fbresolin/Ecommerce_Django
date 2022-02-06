@@ -3,26 +3,129 @@
 {% block title %} Listing {% endblock %}
 
 {% block body %}
-<h1>{{ listing_data.title }}
-  {% if user.username != listing_data.user.username %}
-  / Add to wishlist
+<h1>Listing: {{ listing_data.title }} </h1>
+<br />
+
+{% if user.is_authenticated %}
+{% if listing_data.user == user %}
+<div class="alert alert-primary">
+  <h4 class="alert-heading">Edit listing</h4>
+  <div style="display: flex; column-gap: 20px">
+    <form action="{% url 'edit_listing' listing_data.pk %}">
+      <div>
+        <input hidden name="pk" type="number" value="{{ listing_data.pk }}">
+        <input class="btn btn-warning" type="submit" value="Edit listing">
+      </div>
+    </form>
+    <form action="{% url 'delete_listing' %}" method="POST">
+      {% csrf_token %}
+      <div>
+        <input hidden name="pk" type="number" value="{{ listing_data.pk }}">
+        <input class="btn btn-danger" type="submit" value="Remove listing">
+      </div>
+    </form>
+  </div><br />
+  <h4>Data from the highest bidder:</h4>
+  <p>Username: {{ listing_data.get_bid_username }}<br />
+    Email: {{ listing_data.get_bid_email }}</p>
+</div>
+</div>
+{% endif %}
+{% endif %}
+
+<div>
+  {% if listing_data.get_highest_bid is None %}
+  <p><strong>Initial value: R${{ listing_data.value }}</strong><br />
+    No bids until now. Take this oportunity, place your bid now!</p>
+  {% else %}
+  <p><strong>Bidding value: R${{ listing_data.get_highest_bid }}</strong><br />
+    Bid count: {{ listing_data.get_bid_count }} <br />
+    Initial value: R${{ listing_data.value }}
+  </p>
   {% endif %}
-</h1>
-<h5>{{ listing_data.user }}</h2>
-  <br /><br />
+  <br />
+</div>
 
-  {% if user.username != listing_data.user.username %}
-  <h1>Add to wishlist</h1>
-  {% endif %}
+{% if messages %}
+{% for message in messages %}
+{% if message.tags == 'warning' %}
+<div class="alert alert-warning">
+  <p class="mb-0">{{ message.message }}</p>
+</div>
+{% elif message.tags == 'success' %}
+<div class="alert alert-success">
+  <p class="mb-0">{{ message.message }}</p>
+</div>{% endif %}
+{% endfor %}
+{% endif %}
 
-  <p>Description:</p>
-  <p>{{ listing_data.description }}</p>
-  <br /><br />
+{% if user.is_authenticated %}
+{% if listing_data.user != user %}
+<div class="alert alert-secondary">
+  <h4 class="alert-heading">Place bid</h4>
+  <div style="display: flex; column-gap: 20px">
+    <form action="{% url 'bid' %}" method="POST">
+      {% csrf_token %}
+      <fieldset>
+        <div class="input-group">
+          <input hidden name="pk" type="number" value="{{ listing_data.pk }}">
+          <input type="number" min="0.00" name="bid" step="0.01" placeholder="Bid" style="float:left" required>
+          <span class="input-group-addon"></span>
+          <input class="btn btn-success" type="submit" value="Submit bid" style="float:left">
+        </div>
+      </fieldset>
+    </form>
+    <form action="{% url 'wishlist' %}" method="POST">
+      {% csrf_token %}
+      <input hidden name="pk" type="number" value="{{ listing_data.pk }}">
+      <input hidden name="title" type="title" value="{{ listing_data.title }}">
+      {% if wish %}
+      <input hidden name="wish" type="number" value="1">
+      <input class="btn btn-warning" type="submit" value="Remove from wishlist">
+      {% else %}
+      <input hidden name="wish" type="number" value="0">
+      <input class="btn btn-success" type="submit" value="Add to wishlist">
+      {% endif %}
+    </form>
+  </div>
+</div>
+</div>
+{% endif %}
+{% endif %}
 
-  <p>Image:</p>
-  <img src="{{ listing_data.url }}" alt="Image of a {{ listing_data.title }}" width="500">
-  <br /><br />
 
-  <p>Initial value: R$ {{ listing_data.value }} </p>
+<img src="{{ listing_data.url }}" alt="Image of a {{ listing_data.title }}" width="500">
+<br /><br />
 
-  {% endblock %}
+<h6>{{ listing_data.description }}</h6>
+<br />
+
+<p>Listed by <a href="{% url 'listings' listing_data.user %}">{{ listing_data.user }}</a></p>
+<p>Created in {{ listing_data.created }} </p><br />
+
+<div>
+  <form action="{% url 'comment' %}" method="post">
+    {% csrf_token %}
+    <input hidden name="pk" type="number" value="{{ listing_data.pk }}">
+    <fieldset>
+      <div class="form-group">
+        <label for="comment" class="form-label mt-4">Comment section:</label>
+        <textarea class="form-control" name="comment" aria-describedby="Comment" rows="4" maxlength="512"
+          required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit comment</button>
+    </fieldset>
+  </form>
+</div><br />
+
+{% for comment in comments %}
+<div class="card border-primary mb-3">
+  <div class="card-body">
+    <p class="card-text">{{ comment.comment }}</p>
+    <div class="card-header" style="font-size: .8rem;">{{ comment.user }}, {{ comment.time_elapsed_since_created }}
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}
